@@ -1,0 +1,470 @@
+
+\documentclass[12pt,letter-paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{bm}
+
+\begin{document}
+
+\title{Flight Delay Prediction Using Flight and Weather Data}
+\author{Shreyas Srinivasan}
+\date{}
+\maketitle
+
+\begin{abstract}
+    \textit{A flight delay occurs if a flight departes or arrives later than the scheduled time. This delay will be affected by factors such as weather conditions, air traffic, thunderstorm and other weather glitches. Based on the above, this project aims to predict whether a flight will be delayed or not and the delay time for the same, using a two-stage machine learning model trained on a dataset.}
+\end{abstract}
+
+
+\section{Introduction}
+
+    Flight delay affects airlines, airports and passengers. Losses for airline companies due to flight delays have been increasing over the years with an average loss of over 6 billion dollars annually. Annual passenger losses surpass an average of 14 billion dollars. Hence predication of flight delays is essential as it can help passengers and airlines reduce financial losses significantly and also give passengers a fair idea of how much time they will be loosing so that they can reschedule their plans
+    \paragraph{}
+    
+    This project aims to build a two-stage model to predict whether a flight will be delayed or not and predict the delay of flights based on Weather and Flight Data across 15 airports in USA between the years 2016 and 2017. Different classification and regression models are studied and compared in this project.
+    
+\section{Dataset and Preprocessing}
+   
+     The flight dataset contains data of all domestic flights in the USA between the years 2016 and 2017. The individual flight details which have their origin and destination in the 15 specified airports comprise the Flight Dataset. The weather data was a json file, and it was restructured into csv to get the Weather Dataset. 
+     \paragraph{}
+     Flight and Weather Datasets are merged twice seperately. First the Flight Dataset is merged with the Weather Dataset based on, Departure Date, Absolute Departure Time and Departure Airport. The merged dataset is then merged with Flight Dataset based on, Arrival Date, Absolute Arrival Time and Arrival Airport to obtain the final dataset.
+    
+    \paragraph{}
+    
+        The tables below consist of Airport Codes, Weather and Flight Details respectively.
+
+        \begin{center}
+            \begin{tabular}{ |c|c|c|c|c| }
+            \hline
+            ATL & CLT & DEN & DFW & EWR\\ 
+            \hline
+            IAH & JFK & LAS & LAX & MCO \\ 
+            \hline
+            MIA & ORD & PHX & SEA & SFO\\ 
+            \hline
+            \end{tabular}
+        \end{center}
+        
+        \begin{center}
+            Table 1: Chosen Airport Codes
+        \end{center}
+        
+        
+        \begin{center}
+        \begin{tabular}{ |c|c|c|c| }
+         \hline
+        WindSpeedKmph & WindDirDegree & WeatherCode & precipMM\\
+         \hline
+        Visibility & Pressure & Cloudcover & DewPointF\\
+         \hline
+        WindGustKmp & tempF & WindChillF & Humidity\\
+         \hline
+        date & time & airport & \\
+         \hline
+        \end{tabular}
+        \end{center}
+        
+        \begin{center}
+            Table 2: Weather Details
+        \end{center}
+        
+        
+        \begin{center}
+        \begin{tabular}{ |c|c|c|c| } 
+         \hline
+        FlightDate & Quarter & Year	& Month\\
+        \hline
+        DayofMonth & DepTime & DepDel15	& CRSDepTime\\
+        \hline
+        DepDelayMinutes	& OriginAirportID & DestAirportID	& ArrTime\\
+        \hline
+        CRSArrTime & ArrDel15 & ArrDelayMinutes	& \\
+         \hline
+        \end{tabular}
+        \end{center}
+        
+        \begin{center}
+            Table 3: Flight Details
+        \end{center}
+        
+\section{Classification}
+    
+    It is essential to know if a flight will be delayed or not first before finding out by how much time will there be a delay. Hence, the first stage is classification. In this stage, we classify whether the flight is delayed or not by 15 minutes or more. The ground truth used is ArrDel15, which gives details of the same. If ArrDel15 = 1.0, the flight is delayed by 15 minutes or more and ArrDel15 = 0.0 for other cases.
+
+     \subsection{Classification Metrics}
+        \linebreak
+            \begin{flushleft}
+                To evaluate classifier models, we use the following metrics.
+                \linebreak
+                
+                TN: True Negative
+                
+                The model has predicted correctly that a flight will not be delayed.
+                \linebreak
+                
+                TP: True Positive
+                
+                The model has predicted correctly that a flight will be delayed.
+                \linebreak
+                
+                FN: False Negative
+                
+                The model has predicted wrongly that a flight will not be delayed.
+                \linebreak
+                
+                FP:False Positive
+                
+                The model has predicted wrongly that a flight will be delayed.
+                \linebreak
+            \end{flushleft}
+
+        \begin{itemize}
+            \item\textbf{Accuracy}
+            
+                 Accuracy is the ratio of true results to the total number of results that are examined.
+             
+                \[Accuracy = \frac{TP + TN }{TP + FP + FN + TN}\]
+                
+            
+            \item\textbf{Precision}
+            
+                Ratio of true positives to total positives. Gives a proportion of predictive positives which are truly positive.
+            
+                \[Precision = \frac{TP}{TP + FP}\]
+            
+            \item\textbf{Recall}
+            
+                It tells us what proportion of actual positives are correctly classified.
+            
+                \[Recall = \frac{TP}{TP + FN}\]
+            
+            \item\textbf{$F_1$-Score}
+            
+                $F_1$-Score is the harmonic mean of precision and recall.
+            
+                \[F_1-Score = 2 * \frac{Precision * Recall}{Precision + Recall}\]
+            
+        \end{itemize}
+        
+    \subsection{Classifier Models}
+    
+        Different Classifier models are used and the best classifier is chosen based on F1 Score. The different classifier models used are Logistic Regressor, Decision Tree Classifier, Gradient Boosting Classifier, Extra Trees Classifier and Random Forest Classifier.
+    
+    \subsection{Classifier Perfomance}
+        \begin{table}[H]
+            \begin{center}
+                \begin{tabular}{|l|l|l|l|l|l|l|l|}
+                    \hline
+                    \multirow{2}{*}{Algorithm} & \multicolumn{2}{l|}{Precision} & \multicolumn{2}{l|}{Recall} & \multicolumn{2}{l|}{$F_1$ Score} & \multirow{2}{*}{Accuracy} \\ \cline{2-7}
+                                       & 0              & 1             & 0            & 1            & 0             & 1             &                           \\ \hline
+                Logistic Regressor         & 0.92           & 0.89          & 0.98         & 0.68         & 0.95          & 0.77          & 0.92                      \\ \hline
+                Decision Tree Classifier         & 0.92           & 0.69          & 0.91         & 0.71         & 0.92          & 0.70          & 0.87                      \\ \hline
+                {\bfseries Gradient Boosting Classifier} & \bm{0.92}           & \bm{0.90}          & \bm{0.98}         & \bm{0.70}         & \bm{0.95}          & \bm{0.79}          & \bm{0.92}                      \\ \hline
+                Extra Trees Classifier       & 0.89           & 0.57          & 0.89         & 0.57         & 0.89          & 0.57          & 0.82                      \\ \hline
+                Random Forest Classifier     & 0.92           & 0.89          & 0.98         & 0.70         & 0.95          & 0.78          & 0.92                      \\ \hline
+                \end{tabular}
+            \end{center}
+            \begin{center}
+            Table 4: Classifier Performance
+                \end{center}
+            \end{table}
+    
+    Based on the above results, the {\bfseries Gradient Boosting Classifier} can be inferred as the best classifier, as it has the highest F1-Score for both classes 0 and 1, compared to other classifiers. But it can be observed that the F1-Score of class 0 is higher than class 1. This could be due to the imbalance of delayed and non-delayed flights. 
+    
+    
+\section{Data Imbalance Problem}        
+
+    \begin{figure}[H]%
+        \begin{center}
+          \includegraphics[width=10cm]{dataimb.png}%
+            \caption{Dataset Distribution Before Sampling}  
+        \end{center}
+    \end{figure}
+    
+    In the above classification algorithms, the performance of Class 1 (delayed flights) is weaker than Class 0 (non-delayed flights). This is due to more number of non-delayed flights present in the dataset, as shown in Fig 1. Hence it is important to apply sampling to the dataset before choosing the best classifier. 
+    
+    \paragraph{}
+    Table 4 shows the classifier performance before overcoming the bias.
+    
+    \paragraph{}
+        This bias in the dataset can be overcome by applying Oversampling or Undersampling Techniques like
+        \item\textbf{Random Under Sampler}
+            
+            This technique involves randomly removing data from the majority class.
+            
+        \item\textbf{Near Miss}
+            
+            In this technique, we eliminate majority class examples by checking if there are instances of two different classes that are very close to each other in the feature space. We remove the instances of the majority class to increase the space between the two classes.  
+            
+        \item\textbf{Random Over Sampler}
+            
+            This technique involves randomly duplicating data from the minority class and adding it to the training data.
+        
+        \item\textbf{Synthetic Memory Oversampling Technique(SMOTE)}
+            
+            In this technique, the new instances are generated by randomly selecting one or more of the k-nearest neighbors for each instance in the feature space in the minority class.
+        
+    \subsection{Undersampling}
+    
+    Undersampling involves removal or elimination of data in the majority class so that the number of flights in each class will be equal. The number of flights in each class after undersampling has been shown in Fig.2 below. Random Under Sampler and Near Miss techniques are used for undersampling in this project.
+        \begin{figure}[H]%
+            \begin{center}
+                \includegraphics[width=10cm]{undersampling.png}%
+                    \caption{Dataset Distribution After Undersampling}  
+            \end{center}
+        \end{figure}
+        
+        \begin{table}[H]
+    \begin{center}
+        \begin{tabular}{|l|l|l|l|l|l|l|l|}
+            \hline
+            \multirow{2}{*}{Algorithm} & \multicolumn{2}{l|}{Precision} & \multicolumn{2}{l|}{Recall} & \multicolumn{2}{l|}{$F_1$ Score} & \multirow{2}{*}{Accuracy} \\ \cline{2-7}
+                               & 0              & 1             & 0            & 1            & 0             & 1             &                           \\ \hline
+        Logistic Regression         & 0.94           & 0.74          & 0.93         & 0.78         & 0.93          & 0.76          & 0.90                     \\ \hline
+        Decision Tree Classifier         & 0.94           & 0.51          & 0.79         & 0.81         & 0.86          & 0.62          & 0.80                      \\ \hline
+        Gradient Boosting Classifier & 0.95           & 0.73          & 0.92         & 0.81         & 0.93          & 0.76          & 0.90                      \\ \hline
+        ExtraTrees Classifier       & 0.90           & 0.39          & 0.70         & 0.71         & 0.79          & 0.50          & 0.71                      \\ \hline
+        Random Forest Classifier     & 0.95           & 0.72          & 0.92         & 0.81         & 0.93          & 0.76          & 0.89                      \\ \hline
+        \end{tabular}
+    \end{center}
+    \begin{center}
+    Table 5: Classifier Performance using Random Under Sampler
+        \end{center}
+    \end{table}
+    
+        \begin{table}[H]
+    \begin{center}
+        \begin{tabular}{|l|l|l|l|l|l|l|l|}
+            \hline
+            \multirow{2}{*}{Algorithm} & \multicolumn{2}{l|}{Precision} & \multicolumn{2}{l|}{Recall} & \multicolumn{2}{l|}{$F_1$ Score} & \multirow{2}{*}{Accuracy} \\ \cline{2-7}
+                               & 0              & 1             & 0            & 1            & 0             & 1             &                           \\ \hline
+        Logistic Regression         & 0.94           & 0.74          & 0.93         & 0.78         & 0.93          & 0.76          & 0.90                     \\ \hline
+        Decision Tree Classifier         & 0.94           & 0.51          & 0.79         & 0.81         & 0.86          & 0.62          & 0.80                      \\ \hline
+        Gradient Boosting Classifier & 0.90           & 0.39          & 0.70         & 0.71         & 0.79          & 0.50          & 0.71                      \\ \hline
+        ExtraTrees Classifier       & 0.95           & 0.73          & 0.92         & 0.81         & 0.93          & 0.76          & 0.90                      \\ \hline
+        Random Forest Classifier     & 0.95           & 0.72          & 0.92         & 0.81         & 0.93          & 0.76          & 0.89                      \\ \hline
+        \end{tabular}
+    \end{center}
+    \begin{center}
+    Table 6: Classifier Performance using Near Miss 
+        \end{center}
+        
+    After applying Near Miss Undersampling and Random Under Sampler techniques, the F1-Scores are poorer compared to the the results before sampling. Hence, the dataset is oversampled to observe if results get better.
+    
+    \end{table}
+    
+    \subsection{Oversampling}
+    
+    Oversampling involves duplication of data from the minority class and adding it to the training data so that number of flights will be equal in each class. The number of flights in each class has been shown in Fig.3 below. Random Over Sampler and Synthetic Memory Oversampling Technique(SMOTE) are used for oversampling in this project.
+        
+            \begin{figure}[H]%
+                \begin{center}
+                    \includegraphics[width=10cm]{oversampling.png}%
+                        \caption{Dataset Distribution After Oversampling}  
+                \end{center}
+            \end{figure}
+            
+            \begin{table}[H]
+        \begin{center}
+            \begin{tabular}{|l|l|l|l|l|l|l|l|}
+                \hline
+                \multirow{2}{*}{Algorithm} & \multicolumn{2}{l|}{Precision} & \multicolumn{2}{l|}{Recall} & \multicolumn{2}{l|}{$F_1$ Score} & \multirow{2}{*}{Accuracy} \\ \cline{2-7}
+                                   & 0              & 1             & 0            & 1            & 0             & 1             &                           \\ \hline
+            Logistic Regression         & 0.94           & 0.74          & 0.93         & 0.78         & 0.93          & 0.76          & 0.90                     \\ \hline
+            Decision Tree Classifier         & 0.92           & 0.69          & 0.92         & 0.70         & 0.92          & 0.70          & 0.87                      \\ \hline
+            Gradient Boosting Classifier & 0.95           & 0.73          & 0.92         & 0.81         & 0.93          & 0.77          & 0.90                      \\ \hline
+            ExtraTrees Classifier       & 0.89           & 0.60          & 0.89         & 0.59         & 0.89          & 0.59          & 0.83                      \\ \hline
+            Random Forest Classifier     & 0.93           & 0.83          & 0.96         & 0.74         & 0.95          & 0.78          & 0.91                      \\ \hline
+            \end{tabular}
+        \end{center}
+        \begin{center}
+        Table 7: Classifier Performance using Random Over Sampler
+            \end{center}
+        \end{table}
+        
+            \begin{table}[H]
+        \begin{center}
+            \begin{tabular}{|l|l|l|l|l|l|l|l|}
+                \hline
+                \multirow{2}{*}{Algorithm} & \multicolumn{2}{l|}{Precision} & \multicolumn{2}{l|}{Recall} & \multicolumn{2}{l|}{$F_1$ Score} & \multirow{2}{*}{Accuracy} \\ \cline{2-7}
+                                   & 0              & 1             & 0            & 1            & 0             & 1             &                           \\ \hline
+            Logistic Regression         & 0.94           & 0.74          & 0.93         & 0.78         & 0.93          & 0.76          & 0.90                     \\ \hline
+            Decision Tree Classifier         & 0.92           & 0.67          & 0.91         & 0.71         & 0.91          & 0.69          & 0.87                      \\ \hline
+            {\bfseries Gradient Boosting Classifier} & \bm{0.93}           & \bm{0.87}          & \bm{0.97}         & \bm{0.71}         & \bm{0.95}          & \bm{0.78}          & \bm{0.92}                      \\ \hline
+            Extra Tree Classifier       & 0.89           & 0.50          & 0.84         & 0.62         & 0.86          & 0.55          & 0.79                      \\ \hline
+            Random Forest Classifier     & 0.94           & 0.80          & 0.95         & 0.77         & 0.94          & 0.78          & 0.91                      \\ \hline
+            \end{tabular}
+        \end{center}
+        \begin{center}
+        Table 8: Classifier Performance using SMOTE 
+            \end{center}
+        \end{table}
+        
+    After applying Random Over Sampler and SMOTE techniques, the F1-Scores don't significantly change than before sampling. However, SMOTE algorithm involves selecting one or more of the k-nearest members for each instance, rather than random duplication of data in Random Under Sampler. Hence, SMOTE is considered as a better oversampling technique.
+    
+    \paragraph{}
+    As {\bfseries Gradient Boosting Classifier} has the best F1-Score compared to other classifiers after sampling using {\bfseries SMOTE}, it is chosen as the best classifier.
+    
+\section{Regression}
+
+    After finding out if a flight is delayed or not, it is important to know the delay time. The delayed flights are classified based on ArrDel15 = 1.0. Different regression models are used to obtain the delay period (in minutes) of flights. The ground truth will be ArrDelayMinutes, which is the time difference between the CRSArrTime (scheduled Arrival Time) and ArrTime (actual Arrival Time).
+    
+    \subsection{Regression Metrics}
+ 
+        To evaluate the regressor models, we use the following metrics.
+        
+        \begin{flushleft}
+        
+            The following notations stand for : 
+            
+            $\bar{Y}$: Mean Value Of Y
+        
+            $\hat{Y}$: Predicted Value Of Y
+        
+            N: Number of Data Points
+        
+        \end{flushleft}
+        
+        \begin{itemize}
+        
+            \item\textbf{Mean Absolute Error}
+            
+                \[Mean\ Absolute\ Error(MAE) =  \frac{1}{N}\sum_{i=1}^{N}\mid Y_i - \hat Y_i\mid\]
+                
+            \item\textbf{Mean Square Error}
+            
+                \[Mean\ Square\ Error(MSE) =  \frac{1}{N}\sum_{i=1}^{N}(Y_i - \hat Y_i)\\^2\]
+            
+            \item\textbf{Root Mean Square Error}
+            
+                \[Root\ Mean\ Square\ Error(RMSE) =  \sqrt{\frac{1}{N}\sum_{i=1}^{N}(Y_i - \hat Y_i)\\^2}\]
+                
+                
+            \item\textbf{$R^2$ Score}
+            
+                \[R^2 Score = 1 - \frac{\sum_{i=1}^{N}(Y_i - \hat Y_i)\\^2}{\sum_{i = 1}^{N}({Y_i - \bar{Y})}^2}\]
+            
+        \end{itemize}
+        
+    \subsection{Regression Models}
+    
+        Among the different Regressor models that will be used, the best regressor is chosen based on RMSE and MAE values. The different regressor models include Linear Regressor, Extra Trees Regressor, Gradient Boosting Regressor and Random Forest Regressor.
+     
+    \subsection{Regression Perfomance}
+    
+        \begin{table}[H]
+            \begin{center}
+                \begin{tabular}{ |c|c|c|c| } 
+                    \hline
+                    Regression Model & RMSE & MAE & $R^2$ Score\\ 
+                    \hline
+                    Linear Regressor & 19.79 & 14.49 & 0.93\\ 
+                    \hline
+                    Extra Trees Regressor & 16.55 & 11.64 & 0.95\\ 
+                    \hline
+                    {\bfseries Random Forest Regressor} & \bm{16.53} & \bm{11.64} & \bm{0.95}\\ 
+                    \hline
+                    Gradient Boosting Regressor & 16.83 & 11.60 & 0.95\\ 
+                    \hline
+                \end{tabular}
+            \end{center}
+            \begin{center}
+                Table 9: Performance of The Regressors
+            \end{center}
+        \end{table}
+        
+    As {\bfseries Random Forest Regressor} has the lowest RMSE value and a MAE value close to the lowest value, it can be considered as the best regressor.
+    
+\section{Regression Analysis}
+    The arrival delay time of flights ranges from 0.0 to 2142.0 minutes. Regression analysis is done to check performance of the best regressor, obtained from Table 9, on different time intervals and form an analysis based on the same.
+    
+    \begin{table}[H]
+        \begin{center}
+            \begin{tabular}{ |c|c|c|c|c| } 
+                \hline
+                ArrivalDelayMinutes & No Of Flights & RMSE & MAE & R2 Score\\ 
+                \hline
+                0 - 100 & 323550 & 13.15 & 9.89 & 0.64\\ 
+                \hline
+                100 - 200 & 48954 & 15.81 & 11.98 & 0.66\\ 
+                \hline
+                200 - 500 & 14232 & 20.39 & 14.61 & 0.91\\ 
+                \hline
+                500 - 1000 & 1128 & 22.72 & 16.34 & 0.97\\ 
+                \hline
+                1000 - 2000 & 175 & 49.04 & 29.72 & 0.96\\ 
+                \hline
+        \end{tabular}
+        \end{center}
+        \begin{center}
+            Table 10: Frequency Distribution And Range Wise Regressor Scores Of The Flights
+    \end{center}
+    \end{table}
+    
+    \begin{figure}[H]%
+        \begin{center}
+            \includegraphics[width=16cm]{regressionanalysis.png}%
+                \caption{Frequency Distribution of Flight Delay in minutes}  
+        \end{center}
+    \end{figure}
+    
+    The above figure Fig.4 indicates the distribution of flights over different time ranges. 
+    
+    Low RMSE value indicates that predicted data is close to original data and low MAE value indicates the performance of the regressor. High R2 Score indicates how well the predicted data has been fit among original data.
+    
+    The 200-500 range and the 500-1000 range offer low RMSE and MAE values with a high R2 Score. Although 500-100 range offers a better R2 Score with RMSE and MAE values close to the 200-500 range, its training data size is significantly lesser than the 200-500 range. As the 200-500 range offers good results after training a significantly larger dataset, it can concluded that the {\bfseries best regressor perfomance} is observed in the {\bfseries 200-500 range}. 
+    
+\section{Pipeline}
+
+    \begin{figure}[H]%
+        \begin{center}
+            \includegraphics[width=15cm]{pipeline.png}%
+                \caption{Pipelining Process}
+        \end{center}
+    \end{figure}
+    
+    In pipelining the best classifier and regressor  are used to classify and regress our data respectively. First dataset is classified using the best classifier, {\bfseries Gradient Boosting Classifier using SMOTE}. 
+    
+    The classified dataset with only delayed flights is then regressed using the best regressor, {\bfseries Random Forest Regressor}. After regression, R2 Score, Root Mean Square Error and Mean Absolute Error are observed.
+
+    \begin{center}
+        \begin{tabular}{ |c|c|} 
+         \hline
+         Metric & Value\\ 
+         \hline
+         MAE & 11.64 \\  
+         \hline
+         RMSE & 16.53\\ 
+         \hline
+         $R^2 Score$ & 0.95\\ 
+         \hline
+        \end{tabular}
+    \end{center}
+    \begin{center}
+            Table 11: Performance of the Pipeline model
+    \end{center}
+    
+    After observation of results in Table 11, the final stage of the project, the pipeline, has been successully completed. 
+\section{Conclusion}
+    
+    Classification models were used to classify the flights as delayed or non delayed. The classifier performance was observed, which showed the poor performance of Class 1 with respect to Class 0. The poor performance was due to more number of non-delayed flight data points being present in the dataset. This imbalanced data was overcome by applying SMOTE. After using SMOTE, the recall values of Class 1 increased. Gradient Boost Classifier was chosen for the pipeline model as it had the highest $F_1$ Score.
+    
+    \paragraph{}
+    Regression models were used to predict the arrival delay,in minutes, for the flights classified as delayed. Random Forest Regressor was chosen for the pipeline model as it had a high $R^2$ Score, low RMSE and low MAE values. Regression Analysis was done to check perfomance of the best regressor in smaller intervals from the dataset based on ArrDelayMinutes. The pipeline model with the selected classifier and regressor performed with reasonable accuracy.
+    
+    \paragraph{}
+    Thereby a two-stage predictive machine learning model has been successfully built which predicted if a flight will be delayed or not and by how much time will there be a delay if it exists. 
+    
+    \paragraph{}
+    With this information, passengers and airlines can significantly reduce losses caused by delays and also help in better planning of time. 
+
+    
+\end{document}
+
+
+\end{document}
