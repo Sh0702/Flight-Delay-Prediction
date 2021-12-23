@@ -94,7 +94,7 @@
         
 \section{Classification}
     
-    It is essential to know if a flight will be delayed or not first before finding out by how much time will there be a delay. Hence, the first stage is classification. In this stage, we classify whether the flight is delayed or not by 15 minutes or more. The ground truth used is ArrDel15, which gives details of the same. If ArrDel15 = 1.0, the flight is delayed by 15 minutes or more and ArrDel15 = 0.0 for other cases.
+    It is essential to know if a flight will be delayed or not first before finding out by how much time will the delay be. Hence, the first stage is classification. In this stage, we classify whether the flight is delayed or not by 15 minutes or more. The ground truth used is ArrDel15, which gives details of the same. If ArrDel15 = 1.0, the flight is delayed by 15 minutes or more and ArrDel15 = 0.0 for other cases.
 
      \subsection{Classification Metrics}
         \linebreak
@@ -153,7 +153,7 @@
         
     \subsection{Classifier Models}
     
-        Different Classifier models are used and the best classifier is chosen based on F1 Score. The different classifier models used are Logistic Regressor, Decision Tree Classifier, Gradient Boosting Classifier, Extra Trees Classifier and Random Forest Classifier.
+        Different Classifier models are used and the best classifier is chosen based on F1-Score. The different classifier models used are Logistic Regressor, Decision Tree Classifier, Gradient Boosting Classifier, Extra Trees Classifier and Random Forest Classifier.
     
     \subsection{Classifier Perfomance}
         \begin{table}[H]
@@ -186,7 +186,7 @@
         \end{center}
     \end{figure}
     
-    In the above classification algorithms, the performance of Class 1 (delayed flights) is weaker than Class 0 (non-delayed flights). This is due to more number of non-delayed flights present in the dataset, as shown in Fig 1. Hence it is important to apply sampling to the dataset before choosing the best classifier. 
+    In the above classification algorithms, the performance of Class 1 (delayed flights) is weaker than Class 0 (non-delayed flights). This could be due to larger number of non-delayed flights present in the dataset, as shown in Fig 1. Hence it is important to apply sampling to the dataset before choosing the best classifier. 
     
     \paragraph{}
     Table 4 shows the classifier performance before overcoming the bias.
@@ -397,7 +397,7 @@
                 \hline
                 500 - 1000 & 1128 & 22.72 & 16.34 & 0.97\\ 
                 \hline
-                1000 - 2000 & 175 & 49.04 & 29.72 & 0.96\\ 
+                1000 - 2142 & 175 & 49.04 & 29.72 & 0.96\\ 
                 \hline
         \end{tabular}
         \end{center}
@@ -428,7 +428,7 @@
         \end{center}
     \end{figure}
     
-    In pipelining the best classifier and regressor  are used to classify and regress our data respectively. First dataset is classified using the best classifier, {\bfseries Gradient Boosting Classifier using SMOTE}. 
+    In pipelining the best classifier and regressor  are used to classify and regress the dataset respectively. First dataset is classified using the best classifier, {\bfseries Gradient Boosting Classifier using SMOTE}. 
     
     The classified dataset with only delayed flights is then regressed using the best regressor, {\bfseries Random Forest Regressor}. After regression, R2 Score, Root Mean Square Error and Mean Absolute Error are observed.
 
@@ -452,7 +452,7 @@
     After observation of results in Table 11, the final stage of the project, the pipeline, has been successully completed. 
 \section{Conclusion}
     
-    Classification models were used to classify the flights as delayed or non delayed. The classifier performance was observed, which showed the poor performance of Class 1 with respect to Class 0. The poor performance was due to more number of non-delayed flight data points being present in the dataset. This imbalanced data was overcome by applying SMOTE. After using SMOTE, the recall values of Class 1 increased. Gradient Boost Classifier was chosen for the pipeline model as it had the highest $F_1$ Score.
+    Classification models were used to classify the flights as delayed or non delayed. The classifier performance was observed, which showed the poor performance of Class 1 with respect to Class 0. The poor performance was due to more number of non-delayed flight data points being present in the dataset. This imbalanced data was overcome by applying SMOTE. After using SMOTE, the recall values of Class 1 increased. Gradient Boost Classifier was chosen for the pipeline model as it had the highest $F_1$-Score.
     
     \paragraph{}
     Regression models were used to predict the arrival delay,in minutes, for the flights classified as delayed. Random Forest Regressor was chosen for the pipeline model as it had a high $R^2$ Score, low RMSE and low MAE values. Regression Analysis was done to check perfomance of the best regressor in smaller intervals from the dataset based on ArrDelayMinutes. The pipeline model with the selected classifier and regressor performed with reasonable accuracy.
